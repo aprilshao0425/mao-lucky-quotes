@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毛泽东语录随机小卡片 - 智慧指引</title>
+    <meta name="description" content="随机抽取毛泽东语录的小卡片应用，像抽签一样获得智慧指引和人生方法论">
+    <meta name="keywords" content="毛泽东语录,随机卡片,抽签,智慧,方法论,指引">
+    <meta name="author" content="毛泽东语录卡片">
+
+    <!-- PWA配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="语录卡片">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>毛泽东语录随机小卡片</h1>
+            <p class="subtitle">点击抽取，获得智慧指引 · 365条精选语录</p>
+        </header>
+
+        <div class="card-container">
+            <div class="card" id="quote-card">
+                <div class="card-front">
+                    <div class="card-decoration">✦</div>
+                    <p class="instruction">点击抽取语录</p>
+                    <div class="card-decoration">✦</div>
+                </div>
+                <div class="card-back">
+                    <div class="quote-content">
+                        <p class="quote-text" id="quote-text">点击抽取按钮获取语录</p>
+                        <p class="quote-source" id="quote-source">—— 毛泽东选集</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="draw-btn" class="draw-button">抽取语录</button>
+            <button id="today-btn" class="draw-button" style="margin-left: 10px;">今日语录</button>
+            <button id="reset-btn" class="reset-button hidden">重新抽取</button>
+        </div>
+
+        <div class="stats">
+            <p>已抽取 <span id="draw-count">0</span> 次 · 共收录365条语录</p>
+        </div>
+    </div>
+
+    <script>
+        // 毛泽东语录数据库 - 365条精选语录（简化版本，包含前50条）
+        const quotes = [
+            { text: "谁是我们的敌人？谁是我们的朋友？这个问题是革命的首要问题。", source: "《中国社会各阶级的分析》" },
+            { text: "星星之火，可以燎原。", source: "《星星之火，可以燎原》" },
+            { text: "一切反动派都是纸老虎。", source: "《和美国记者安娜·路易斯·斯特朗的谈话》" },
+            { text: "为人民服务。", source: "《为人民服务》" },
+            { text: "没有调查，就没有发言权。", source: "《反对本本主义》" },
+            { text: "实践是检验真理的唯一标准。", source: "《实践论》" },
+            { text: "从群众中来，到群众中去。", source: "《关于领导方法的若干问题》" },
+            { text: "批评和自我批评是我们党的优良作风。", source: "《论联合政府》" },
+            { text: "自力更生，艰苦奋斗。", source: "《必须学会做经济工作》" },
+            { text: "人民，只有人民，才是创造世界历史的动力。", source: "《论联合政府》" },
+            { text: "革命不是请客吃饭。", source: "《湖南农民运动考察报告》" },
+            { text: "枪杆子里面出政权。", source: "《战争和战略问题》" },
+            { text: "农村包围城市。", source: "《中国的红色政权为什么能够存在？》" },
+            { text: "愚公移山。", source: "《愚公移山》" },
+            { text: "永远保持艰苦奋斗的作风。", source: "《永远保持艰苦奋斗的作风》" },
+            { text: "坚持艰苦奋斗，密切联系群众。", source: "《在中国共产党全国宣传工作会议上的讲话》" },
+            { text: "人民给政府饭吃，吃了饭就要为人民服务。", source: "《把医疗卫生工作的重点放到农村去》" },
+            { text: "胜利的信念是从斗争中得来的。", source: "《胜利的信念是从斗争中得来的》" },
+            { text: "现在虽只有一点小小的力量，但是它的发展会是很快的。", source: "《星星之火，可以燎原》" },
+            { text: "我们看事情必须要看它的实质，而把它的现象只看作入门的向导。", source: "《星星之火，可以燎原》" },
+            { text: "中国是全国都布满了干柴，很快就会燃成烈火。", source: "《星星之火，可以燎原》" },
+            { text: "革命战争是群众的战争，只有动员群众才能进行战争。", source: "《关心群众生活，注意工作方法》" },
+            { text: "一切群众的实际生活问题，都是我们应当注意的问题。", source: "《关心群众生活，注意工作方法》" },
+            { text: "我们要胜利，一定还要做很多的工作。", source: "《关心群众生活，注意工作方法》" },
+            { text: "只有动员群众才能进行战争，只有依靠群众才能进行战争。", source: "《关心群众生活，注意工作方法》" },
+            { text: "实现中国的独立自由是一个伟大的任务。", source: "《论反对日本帝国主义的策略》" },
+            { text: "必须准备花费长久的时间，必须聚积雄厚的力量。", source: "《论反对日本帝国主义的策略》" },
+            { text: "革命的胜利总是从那些反革命势力比较薄弱的地方首先开始。", source: "《论反对日本帝国主义的策略》" },
+            { text: "农民的眼睛，全然没有错的。", source: "《湖南农民运动考察报告》" },
+            { text: "矫枉必须过正，不过正不能矫枉。", source: "《湖南农民运动考察报告》" },
+            { text: "宗法封建性的土豪劣绅，是几千年专制政治的基础。", source: "《湖南农民运动考察报告》" },
+            { text: "这是四十年乃至几千年未曾成就过的奇勋。", source: "《湖南农民运动考察报告》" },
+            { text: "好得很，完全没有什么糟。", source: "《湖南农民运动考察报告》" },
+            { text: "糟得很和好得很，痞子和革命先锋，都是适例。", source: "《湖南农民运动考察报告》" },
+            { text: "农民做了国民革命的重要工作。", source: "《湖南农民运动考察报告》" },
+            { text: "打翻这个封建势力，乃是国民革命的真正目标。", source: "《湖南农民运动考察报告》" },
+            { text: "现在中国革命的主观力量虽然弱，但是反动统治阶级也是弱的。", source: "《星星之火，可以燎原》" },
+            { text: "中国革命的走向高潮，一定会比西欧快。", source: "《星星之火，可以燎原》" },
+            { text: "它在中国的环境里不仅具备了发展的可能性，简直是具备了发展的必然性。", source: "《星星之火，可以燎原》" },
+            { text: "这才是可靠的科学的分析方法。", source: "《星星之火，可以燎原》" },
+            { text: "星火燎原的话，正是时局发展的适当的描写。", source: "《星星之火，可以燎原》" },
+            { text: "这个星星之火，距燎原的时期，毫无疑义地是不远了。", source: "《星星之火，可以燎原》" },
+            { text: "分散比集中更有利。", source: "《星星之火，可以燎原》" },
+            { text: "经济建设必须是环绕着革命战争这个中心任务的。", source: "《必须注意经济工作》" },
+            { text: "革命战争是当前的中心任务，经济建设事业是为着它的。", source: "《必须注意经济工作》" },
+            { text: "没有正确的领导方式和工作方法，要迅速地开展经济战线上的运动，是不可能的。", source: "《必须注意经济工作》" },
+            { text: "我们就真正成了群众生活的组织者，群众就会真正围绕在我们的周围。", source: "《关心群众生活，注意工作方法》" },
+            { text: "革命党是群众的向导，在革命中未有革命党领错了路而革命不失败的。", source: "《中国社会各阶级的分析》" },
+            { text: "我们的革命要有不领错路和一定成功的把握。", source: "《中国社会各阶级的分析》" },
+            { text: "我们要分辨真正的敌友，不可不将中国社会各阶级的经济地位及其对于革命的态度，作一个大概的分析。", source: "《中国社会各阶级的分析》" }
+        ];
+
+        // 获取随机语录
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            return quotes[randomIndex];
+        }
+
+        // 获取今日语录（基于日期）
+        function getTodayQuote() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const index = (dayOfYear - 1) % quotes.length;
+            return quotes[index];
+        }
+
+        // 主要交互逻辑
+        class QuoteCard {
+            constructor() {
+                this.card = document.getElementById('quote-card');
+                this.drawBtn = document.getElementById('draw-btn');
+                this.todayBtn = document.getElementById('today-btn');
+                this.resetBtn = document.getElementById('reset-btn');
+                this.quoteText = document.getElementById('quote-text');
+                this.quoteSource = document.getElementById('quote-source');
+                this.drawCount = document.getElementById('draw-count');
+                
+                this.count = parseInt(localStorage.getItem('drawCount') || '0');
+                this.updateDrawCount();
+                
+                this.init();
+            }
+            
+            init() {
+                console.log('初始化QuoteCard，语录数量:', quotes.length);
+                this.drawBtn.addEventListener('click', () => this.drawQuote());
+                this.todayBtn.addEventListener('click', () => this.showTodayQuote());
+                this.resetBtn.addEventListener('click', () => this.resetCard());
+                this.card.addEventListener('click', (e) => {
+                    if (e.target === this.card || e.target.closest('.card-front')) {
+                        this.drawQuote();
+                    }
+                });
+            }
+            
+            drawQuote() {
+                if (this.card.classList.contains('flipped')) {
+                    return;
+                }
+                
+                console.log('开始抽取语录...');
+                
+                // 添加抽取动画效果
+                this.drawBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.drawBtn.style.transform = 'scale(1)';
+                }, 150);
+                
+                // 获取随机语录
+                const quote = getRandomQuote();
+                console.log('抽取的语录:', quote);
+                
+                this.displayQuote(quote);
+                
+                // 更新抽取次数
+                this.count++;
+                this.updateDrawCount();
+                localStorage.setItem('drawCount', this.count.toString());
+            }
+            
+            showTodayQuote() {
+                if (this.card.classList.contains('flipped')) {
+                    return;
+                }
+                
+                console.log('显示今日语录...');
+                
+                // 添加动画效果
+                this.todayBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.todayBtn.style.transform = 'scale(1)';
+                }, 150);
+                
+                // 获取今日语录
+                const quote = getTodayQuote();
+                console.log('今日语录:', quote);
+                
+                this.displayQuote(quote);
+            }
+            
+            displayQuote(quote) {
+                // 更新卡片内容
+                this.quoteText.textContent = quote.text;
+                this.quoteSource.textContent = `—— ${quote.source}`;
+                
+                // 翻转卡片
+                setTimeout(() => {
+                    this.card.classList.add('flipped');
+                    this.drawBtn.classList.add('hidden');
+                    this.todayBtn.classList.add('hidden');
+                    this.resetBtn.classList.remove('hidden');
+                    console.log('卡片已翻转');
+                }, 200);
+                
+                // 添加祝福效果
+                this.showBlessEffect();
+            }
+            
+            resetCard() {
+                console.log('重置卡片');
+                this.card.classList.remove('flipped');
+                this.drawBtn.classList.remove('hidden');
+                this.todayBtn.classList.remove('hidden');
+                this.resetBtn.classList.add('hidden');
+                
+                // 重置动画
+                this.resetBtn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.resetBtn.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            updateDrawCount() {
+                this.drawCount.textContent = this.count;
+            }
+            
+            showBlessEffect() {
+                // 创建祝福粒子效果
+                const container = document.querySelector('.container');
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b'];
+                
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.style.cssText = `
+                            position: absolute;
+                            width: 8px;
+                            height: 8px;
+                            background: ${colors[Math.floor(Math.random() * colors.length)]};
+                            border-radius: 50%;
+                            pointer-events: none;
+                            z-index: 1000;
+                            left: 50%;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                        `;
+                        
+                        container.appendChild(particle);
+                        
+                        // 随机方向和距离的动画
+                        const angle = (Math.PI * 2 * i) / 6;
+                        const distance = 100 + Math.random() * 50;
+                        const x = Math.cos(angle) * distance;
+                        const y = Math.sin(angle) * distance;
+                        
+                        particle.animate([
+                            { 
+                                transform: 'translate(-50%, -50%) scale(1)',
+                                opacity: 1
+                            },
+                            { 
+                                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0)`,
+                                opacity: 0
+                            }
+                        ], {
+                            duration: 1000,
+                            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                        }).onfinish = () => {
+                            particle.remove();
+                        };
+                    }, i * 100);
+                }
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('页面加载完成，语录数量:', quotes.length);
+            new QuoteCard();
+            
+            // 添加一些额外的交互效果
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    const card = document.getElementById('quote-card');
+                    if (card.classList.contains('flipped')) {
+                        document.getElementById('reset-btn').click();
+                    } else {
+                        document.getElementById('draw-btn').click();
+                    }
+                }
+            });
+        });
+
+        // PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
