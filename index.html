@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>毛泽东语录随机小卡片 - 智慧指引</title>
-    <meta name="description" content="随机抽取毛泽东语录的小卡片应用，像抽签一样获得智慧指引和人生方法论">
-    <meta name="keywords" content="毛泽东语录,随机卡片,抽签,智慧,方法论,指引">
+    <title>来自毛泽东语录的积极暗示 - 智慧指引</title>
+    <meta name="description" content="来自毛泽东语录的积极暗示，每日获得正能量和人生智慧指导">
+    <meta name="keywords" content="毛泽东语录,积极暗示,正能量,智慧,心理暗示,指引">
     <meta name="author" content="毛泽东语录卡片">
 
     <!-- PWA配置 -->
@@ -14,7 +14,7 @@
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="语录卡片">
+    <meta name="apple-mobile-web-app-title" content="积极暗示">
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,20 +22,20 @@
 <body>
     <div class="container">
         <header>
-            <h1>毛泽东语录随机小卡片</h1>
-            <p class="subtitle">点击抽取，获得智慧指引 · 365条精选语录</p>
+            <h1>来自毛泽东语录的积极暗示</h1>
+            <p class="subtitle">点击获取，接受正能量指引</p>
         </header>
 
         <div class="card-container">
             <div class="card" id="quote-card">
                 <div class="card-front">
                     <div class="card-decoration">✦</div>
-                    <p class="instruction">点击抽取语录</p>
+                    <p class="instruction">点击获取积极暗示</p>
                     <div class="card-decoration">✦</div>
                 </div>
                 <div class="card-back">
                     <div class="quote-content">
-                        <p class="quote-text" id="quote-text">点击抽取按钮获取语录</p>
+                        <p class="quote-text" id="quote-text">点击按钮获取积极暗示</p>
                         <p class="quote-source" id="quote-source">—— 毛泽东选集</p>
                     </div>
                 </div>
@@ -43,18 +43,18 @@
         </div>
 
         <div class="controls">
-            <button id="draw-btn" class="draw-button">抽取语录</button>
-            <button id="today-btn" class="draw-button" style="margin-left: 10px;">今日语录</button>
-            <button id="reset-btn" class="reset-button hidden">重新抽取</button>
+            <button id="draw-btn" class="draw-button">获取暗示</button>
+            <button id="today-btn" class="draw-button" style="margin-left: 10px;">今日暗示</button>
+            <button id="reset-btn" class="reset-button hidden">重新获取</button>
         </div>
 
         <div class="stats">
-            <p>已抽取 <span id="draw-count">0</span> 次 · 共收录365条语录</p>
+            <p>已获取 <span id="draw-count">0</span> 次积极暗示</p>
         </div>
     </div>
 
     <script>
-        // 毛泽东语录数据库 - 365条精选语录（简化版本，包含前50条）
+        // 毛泽东语录数据库 - 精选语录
         const quotes = [
             { text: "谁是我们的敌人？谁是我们的朋友？这个问题是革命的首要问题。", source: "《中国社会各阶级的分析》" },
             { text: "星星之火，可以燎原。", source: "《星星之火，可以燎原》" },
@@ -140,7 +140,7 @@
             }
             
             init() {
-                console.log('初始化QuoteCard，语录数量:', quotes.length);
+                console.log('初始化积极暗示系统...');
                 this.drawBtn.addEventListener('click', () => this.drawQuote());
                 this.todayBtn.addEventListener('click', () => this.showTodayQuote());
                 this.resetBtn.addEventListener('click', () => this.resetCard());
@@ -156,7 +156,7 @@
                     return;
                 }
                 
-                console.log('开始抽取语录...');
+                console.log('正在获取积极暗示...');
                 
                 // 添加抽取动画效果
                 this.drawBtn.style.transform = 'scale(0.95)';
@@ -166,7 +166,7 @@
                 
                 // 获取随机语录
                 const quote = getRandomQuote();
-                console.log('抽取的语录:', quote);
+                console.log('获取的积极暗示:', quote);
                 
                 this.displayQuote(quote);
                 
@@ -181,7 +181,7 @@
                     return;
                 }
                 
-                console.log('显示今日语录...');
+                console.log('显示今日积极暗示...');
                 
                 // 添加动画效果
                 this.todayBtn.style.transform = 'scale(0.95)';
@@ -191,7 +191,7 @@
                 
                 // 获取今日语录
                 const quote = getTodayQuote();
-                console.log('今日语录:', quote);
+                console.log('今日积极暗示:', quote);
                 
                 this.displayQuote(quote);
             }
@@ -207,7 +207,7 @@
                     this.drawBtn.classList.add('hidden');
                     this.todayBtn.classList.add('hidden');
                     this.resetBtn.classList.remove('hidden');
-                    console.log('卡片已翻转');
+                    console.log('积极暗示已显示');
                 }, 200);
                 
                 // 添加祝福效果
@@ -283,7 +283,7 @@
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('页面加载完成，语录数量:', quotes.length);
+            console.log('积极暗示系统已启动');
             new QuoteCard();
             
             // 添加一些额外的交互效果
